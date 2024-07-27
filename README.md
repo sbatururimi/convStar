@@ -3,6 +3,9 @@
 * https://github.com/0zgur0/multi-stage-convSTAR-network/tree/master?tab=readme-ov-file
 * https://github.com/0zgur0/STAckable-Recurrent-network
 
+## Setup
+Create a virtual env from the `requirements.txt` file.
+
 ## Starting
 A simpler approach with pytorch lightning and some StarCell adjustments. We don't split explicitly into folds but that can be done. Check the [original repository](https://github.com/0zgur0/multi-stage-convSTAR-network/tree/master?tab=readme-ov-file) for such info.
 
