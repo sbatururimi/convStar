@@ -1,0 +1,14 @@
+pandas
+numpy
+jupyterlab
+ipykernel
+h5py
+tqdm
+scikit-learn
+lightning
+
+# pytorch 12.4
+--extra-index-url https://download.pytorch.org/whl/cu124
+torch
+torchvision
+torchaudio
