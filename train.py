@@ -9,7 +9,7 @@ def test():
     log_filename = os.path.join(config.LOGS_FOLDER, "train.log")
     logger = utils.get_logger(__name__, log_filename=log_filename)
     cdm = dataset.CropsDataModule(
-        data_dir="/mnt/disk1/projects/multi-stage-convSTAR-network/data.h5",
+        data_dir=config.ZUERI_CROP_DATA_PATH,
         storage_dir=config.STORAGE_FOLDER,
         logger=logger,
     )
