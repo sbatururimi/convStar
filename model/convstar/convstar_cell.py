@@ -3,7 +3,7 @@ import torch
 
 class ConvStarCell(nn.Module):
     def __init__(self, input_size, hidden_size, kernel_size):
-        super.__init__()
+        super().__init__()
 
         padding = kernel_size // 2 # "same" padding: ensure that the spatial dimensions (height and width) of the input tensor are preserved after the convolution operation
         self.input_size = input_size

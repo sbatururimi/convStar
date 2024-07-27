@@ -138,7 +138,7 @@ class CropDataset(Dataset):
             X = X * CC_mask.float()
 
         #augmentation
-        if self.eval_mode == False and np.random.rand() < self.augment_rate:
+        if not self.eval_mode and np.random.rand() < self.augment_rate:
             flip_dir  = np.random.randint(3)
             if flip_dir == 0:
                 X = X.flip(2)

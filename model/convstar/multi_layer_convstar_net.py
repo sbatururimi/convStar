@@ -1,5 +1,5 @@
 from torch import nn
-from convstar_cell import ConvStarCell
+from model.convstar.convstar_cell import ConvStarCell
 
 
 class MultiLayerConvStar(nn.Module):
@@ -17,7 +17,7 @@ class MultiLayerConvStar(nn.Module):
             if integer, the same kernel size is used for all cells.
         n_layers : integer. number of chained `ConvSTARCell`.
         '''
-        super.__init()
+        super().__init__()
 
         self.input_size = input_size
         self.n_layers = n_layers
@@ -49,7 +49,7 @@ class MultiLayerConvStar(nn.Module):
 
         self.cells = cells
 
-    def forward(self, x, hidden=None):
+    def forward(self, x, hidden_states = None):
         '''
         Parameters
         ----------
@@ -60,8 +60,8 @@ class MultiLayerConvStar(nn.Module):
         -------
         upd_hidden : 5D hidden representation. (layer, batch, channels, height, width).
         '''
-        if not hidden:
-            hidden = [None] * self.n_layers
+        if not hidden_states:
+            hidden_states = [None] * self.n_layers
 
         input_ = x
 
@@ -69,7 +69,7 @@ class MultiLayerConvStar(nn.Module):
 
         for layer_idx in range(self.n_layers):
             cell = self.cells[layer_idx]
-            cell_hidden = hidden[layer_idx]
+            cell_hidden = hidden_states[layer_idx]
 
             # pass through layer
             upd_cell_hidden = cell(input_, cell_hidden)
