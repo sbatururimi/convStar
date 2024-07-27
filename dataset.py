@@ -299,11 +299,26 @@ class CropsDataModule(L.LightningDataModule):
                 gt_filepath=gt_filepath,
                 logger=self.logger,
             )
+            self.valdataset = CropDataset(
+                self.data_dir,
+                mode=TrainingMode.Val,
+                eval_mode=False,
+                threshold=0,
+                gt_filepath=gt_filepath,
+                logger=self.logger,
+            )
         # Assign test dataset for use in dataloader(s)
         if stage == "test":
-            pass
+            self.DataLoader = CropDataset(
+                self.data_dir,
+                mode=TrainingMode.Test,
+                eval_mode=True,
+                threshold=0,
+                gt_filepath=gt_filepath,
+                logger=self.logger,
+            )
         if stage == "predict":
-            pass
+            raise NotImplementedError
 
         self.logger.debug("setting done.")
 
@@ -317,10 +332,16 @@ class CropsDataModule(L.LightningDataModule):
 
     def val_dataloader(self):
         return DataLoader(
-            self.mnist_val, batch_size=self.batch_size, num_workers=self.workers
+            self.valdataset,
+            batch_size=self.batch_size,
+            num_workers=self.workers,
+            shuffle=False,
         )
 
     def test_dataloader(self):
         return DataLoader(
-            self.mnist_test, batch_size=self.batch_size, num_workers=self.workers
+            self.testdataset,
+            batch_size=self.batch_size,
+            num_workers=self.workers,
+            shuffle=False,
         )
