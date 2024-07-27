@@ -35,10 +35,7 @@ class ConvStarCell(nn.Module):
         # Generate empty prev_state if None is provided
         if prev_state is None:
             state_size = [batch_size, self.hidden_size] + list(spatial_size)
-            if torch.cuda.is_available():
-                prev_state = torch.zeros(state_size, device=input_.device)
-            else:
-                prev_state = torch.zeros(state_size)
+            prev_state = torch.zeros(state_size)
 
         # Formula 1: Compute K_t^l
         K_t = torch.sigmoid(self.conv_Wx_K(input_) + self.conv_Wh_K(prev_state) + self.B_K.view(1, -1, 1, 1))
