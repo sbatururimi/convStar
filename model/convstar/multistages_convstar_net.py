@@ -33,7 +33,19 @@ class MultistagesConvStarNet(nn.Module):
 
     def forward(self, x, hidden_states=None):
         # (b x t x c x h x w) -> (b x c x t x h x w)
-        # check dataset.py, L.95 [get_item] when we transpose X's dimensions
+        # RNN expectation: Many RNN architectures, including ConvRNNs, expect the temporal dimension
+        # to be placed after the channel dimension.
+        # This is because RNNs are designed to process sequences,
+        # and they typically operate on sequences of feature maps where each feature map is a 2D spatial grid (height x width).
+        #
+        # Convolution and RNN Compatibility: Convolutional layers operate on spatial dimensions (h and w),
+        # and when combined with RNN layers, the network often needs to maintain the spatial dimensions
+        # while iterating over temporal sequences. Permuting the dimensions
+        # to place the temporal dimension (t) after the channel dimension (c)
+        # aligns the data with the expected input format of RNN layers that will process these sequences.
+        #
+        #
+        # Check dataset.py, L.95 [get_item] when we transpose X's dimensions
         x = x.permute(0, 2, 1, 3, 4)
         b, c, T, h, w = x.shape
 
@@ -76,4 +88,8 @@ class MultistagesConvStarNet(nn.Module):
         elif self.wo_softmax:
             return last, local_1, local_2
         else:
-            return F.log_softmax(last, dim=1), F.log_softmax(local_1, dim=1), F.log_softmax(local_2, dim=1)
+            return (
+                F.log_softmax(last, dim=1),
+                F.log_softmax(local_1, dim=1),
+                F.log_softmax(local_2, dim=1),
+            )
