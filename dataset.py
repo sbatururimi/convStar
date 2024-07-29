@@ -92,7 +92,7 @@ class CropDataset(Dataset):
         if self.eval_mode: # why this is different?
             gt_instance = self.data["gt_instance"][idx,...,0]
 
-        X = np.transpose(X, (0, 3, 1, 2)) # we got (142, 9, 24, 24): (samples, height, width, channels) -> (samples, channels, height, width)
+        X = np.transpose(X, (0, 3, 1, 2)) # we got (142, 9, 24, 24): (samples, height, width, channels) -> (samples, channels, height, width) = (T, c, h, w)
 
         # temporal downsampling and channel selection.
         # 1) `0::self.time_downsample_factor`: taking every 2nd sample starting from index 0
