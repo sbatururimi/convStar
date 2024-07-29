@@ -1,13 +1,18 @@
-from torch import nn
 import torch
+from torch import nn
+
 
 class LabelRefinementNet(nn.Module):
     # Ref: "Crop mapping from image time series: Deep learning with multi-scale
     # label hierarchies":
     # Fig. 3. Label refinement CNN architecture
     def __init__(
-        self, num_classes_l1: int, num_classes_l2: int, num_classes_l3: int, out_channels:int = 128,
-        dropout:float = 0.5
+        self,
+        num_classes_l1: int,
+        num_classes_l2: int,
+        num_classes_l3: int,
+        out_channels: int = 128,
+        dropout: float = 0.5,
     ) -> None:
         super().__init__()
         self.num_classes_l1 = num_classes_l1
@@ -95,5 +100,5 @@ class LabelRefinementNet(nn.Module):
         out = self.conv4(out)
         # ------ end of fig 3 imlementation
 
-        out += x3 # This is visible in formula (5) where: out=f(Y_hat1, Y_hat2,..., Y_hatN), x3 = Y_hatN
+        out += x3  # This is visible in formula (5) where: out=f(Y_hat1, Y_hat2,..., Y_hatN), x3 = Y_hatN
         return out
