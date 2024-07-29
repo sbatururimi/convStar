@@ -11,7 +11,6 @@ class MultistagesConvStarNet(nn.Module):
         nclasses_level2,
         nclasses_level3,
         test: bool = False,
-        nstage: int = 3,
         n_layers: int = 6,
         input_dim: int = 4,
         hidden_dim=64,
@@ -21,7 +20,6 @@ class MultistagesConvStarNet(nn.Module):
         super.__init__()
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
-        self.nstage = nstage
         self.test = test
         self.wo_softmax = wo_softmax
 
@@ -50,15 +48,18 @@ class MultistagesConvStarNet(nn.Module):
         if self.n_layers == 3:
             local_1 = hidden_states[0]
             local_2 = hidden_states[1]
-        elif self.nstage == 3:
-            local_1 = hidden_states[1]
-            local_2 = hidden_states[3]
-        elif self.nstage == 2:
-            local_1 = hidden_states[1]
-            local_2 = hidden_states[2]
-        elif self.nstage == 1:
-            local_1 = hidden_states[-1]
-            local_2 = hidden_states[-1]
+        # elif self.nstage == 3:
+        #     raise NotImplementedError # I don't undersatdn what are nstage
+        #     # local_1 = hidden_states[1]
+        #     # local_2 = hidden_states[3]
+        # elif self.nstage == 2:
+        #     raise NotImplementedError # I don't undersatdn what are nstage
+        #     # local_1 = hidden_states[1]
+        #     # local_2 = hidden_states[2]
+        # elif self.nstage == 1:
+        #     raise NotImplementedError # I don't undersatdn what are nstage
+        #     # local_1 = hidden_states[-1]
+        #     # local_2 = hidden_states[-1]
 
         local_1 = self.conv_l1(local_1)
         local_2 = self.conv_l2(local_2)
