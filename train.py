@@ -10,6 +10,7 @@ import utils
 from model.convstar.multistages_convstar_net import MultistagesConvStarNet
 from model.label_refinement.label_refinement_net import LabelRefinementNet
 from model.model import HierarchicalConvRNN
+from torchinfo import summary
 
 
 def datamodule_test():
@@ -28,7 +29,7 @@ def datamodule_test():
     batches = list(train_dl)
 
 
-def train():
+def train_test_run():
     os.makedirs(config.LOGS_FOLDER, exist_ok=True)
     log_filename = os.path.join(config.LOGS_FOLDER, "train.log")
     logger = utils.get_logger(__name__, log_filename=log_filename)
@@ -54,11 +55,14 @@ def train():
         nclasses_level2=nclasses_local_2,
         nclasses_level3=nclasses,
     )
+    logger.info(summary(ms_convstar_net))
+
     label_refinement_net = LabelRefinementNet(
         num_classes_l1=nclasses_local_1,
         num_classes_l2=nclasses_local_2,
         num_classes_l3=nclasses,
     )
+    logger.info(summary(label_refinement_net))
 
     model = HierarchicalConvRNN(
         ms_convstar_net=ms_convstar_net, label_refinement_net=label_refinement_net
@@ -81,7 +85,7 @@ def train():
     logger.debug("CUDA available: ", torch.cuda.is_available())
 
 
-    trainer = L.Trainer()
+    trainer = L.Trainer(fast_dev_run=True)
     trainer.fit(model=model, datamodule=crops_datamodule)
     # trainer.test(datamodule=crops_datamodule)
     # trainer.validate(datamodule=crops_datamodule)
@@ -92,4 +96,4 @@ if __name__ == "__main__":
     utils.set_seed(42)
 
     # datamodule_test() #comment train and uncomment this line for datamodule test preparation
-    train()
+    train_test_run() # quick test/run to check correctness

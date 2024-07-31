@@ -7,6 +7,7 @@ tqdm
 scikit-learn
 lightning
 rich
+torchinfo
 
 # pytorch 12.4
 --extra-index-url https://download.pytorch.org/whl/cu124

@@ -1,5 +1,5 @@
 from torch import nn
-from multi_layer_convstar_net import MultiLayerConvStar
+from .multi_layer_convstar_net import MultiLayerConvStar
 import torch
 import torch.nn.functional as F
 
@@ -17,7 +17,7 @@ class MultistagesConvStarNet(nn.Module):
         kernel_size=3,
         wo_softmax: bool = True,
     ):
-        super.__init__()
+        super().__init__()
         self.hidden_dim = hidden_dim
         self.n_layers = n_layers
         self.test = test

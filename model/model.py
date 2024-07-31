@@ -9,6 +9,8 @@ class HierarchicalConvRNN(L.LightningModule):
         super().__init__()
         self.ms_conv_star_net = ms_convstar_net
         self.label_refinement_net = label_refinement_net
+        
+        self.loss = torch.nn.CrossEntropyLoss()
         self.save_hyperparameters()
 
     def training_step(self, batch, batch_idx):
