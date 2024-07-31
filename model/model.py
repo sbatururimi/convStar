@@ -18,7 +18,7 @@ class HierarchicalConvRNN(L.LightningModule):
         lambda_2: float = 0.3,
         lambda_3: float = 0.6,
         gamma: float = 0.6,
-        grad_clip = None
+        grad_clip: float = 5
     ):
         super().__init__()
         self.ms_conv_star_net = ms_convstar_net
@@ -36,7 +36,7 @@ class HierarchicalConvRNN(L.LightningModule):
 
         self.mean_loss_level_1 = 0.
         self.mean_loss_level_2 = 0.
-        self.mean_loss_level_3 = 0.
+        self.mean_loss_level_3 = 0. # most fine grained level
 
         self.mean_loss_refinement = 0.
 
