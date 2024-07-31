@@ -29,6 +29,30 @@ def datamodule_test():
     batches = list(train_dl)
 
 
+def get_weights(nclasses, nclasses_local_1, nclasses_local_2):
+    """Retuns the weights for each level
+
+    Args:
+        nclasses (_type_): level 3, i.e fine grained
+        nclasses_local_1 (_type_): level 1, most coarsed
+        nclasses_local_2 (_type_): level 2: middle level
+
+    Returns:
+        (weights level 3, weights level 1, weights level 2)): returns the weights for each level
+    """
+    # FIXME: class imbalance weights? why?
+    LOSS_WEIGHT = torch.ones(nclasses)
+    LOSS_WEIGHT[0] = (
+        0  # looks like we assign a weight of 0 to `SummerBarley`. Check how `nclasses`` is obtained via `prepare_ground_truth_labels` in CropDataset
+    )
+    LOSS_WEIGHT_LOCAL_1 = torch.ones(nclasses_local_1)
+    LOSS_WEIGHT_LOCAL_1[0] = 0
+    LOSS_WEIGHT_LOCAL_2 = torch.ones(nclasses_local_2)
+    LOSS_WEIGHT_LOCAL_2[0] = 0
+
+    return LOSS_WEIGHT, LOSS_WEIGHT_LOCAL_1, LOSS_WEIGHT_LOCAL_2
+
+
 def train_test_run():
     os.makedirs(config.LOGS_FOLDER, exist_ok=True)
     log_filename = os.path.join(config.LOGS_FOLDER, "train.log")
@@ -64,8 +88,23 @@ def train_test_run():
     )
     logger.info(summary(label_refinement_net))
 
+    loss_weights, loss_weights_level1, loss_weights_level2 = get_weights(
+        nclasses, nclasses_local_1, nclasses_local_2
+    )
+
     model = HierarchicalConvRNN(
-        ms_convstar_net=ms_convstar_net, label_refinement_net=label_refinement_net
+        ms_convstar_net=ms_convstar_net,
+        label_refinement_net=label_refinement_net,
+
+        # uncomment if you want to give the same weights as in the repository (not in the paper)
+        # loss_weights_level1=loss_weights_level1,
+        # loss_weights_level2=loss_weights_level2,
+        # loss_weights_level3=loss_weights,
+
+        # uncomment if you want the same behaviour as in the repository. Default values follows the papers
+        # lambda_1 = 0.1,
+        # lambda_2 = 0.5,
+        # lambda_3 = 1
     )
 
     # some model info
@@ -84,7 +123,6 @@ def train_test_run():
     # setup for training and start training
     logger.debug("CUDA available: ", torch.cuda.is_available())
 
-
     trainer = L.Trainer(fast_dev_run=True)
     trainer.fit(model=model, datamodule=crops_datamodule)
     # trainer.test(datamodule=crops_datamodule)
@@ -96,4 +134,4 @@ if __name__ == "__main__":
     utils.set_seed(42)
 
     # datamodule_test() #comment train and uncomment this line for datamodule test preparation
-    train_test_run() # quick test/run to check correctness
+    train_test_run()  # quick test/run to check correctness

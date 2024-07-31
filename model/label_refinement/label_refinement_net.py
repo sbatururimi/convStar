@@ -98,7 +98,7 @@ class LabelRefinementNet(nn.Module):
         out = self.drop3(out)
 
         out = self.conv4(out)
-        # ------ end of fig 3 imlementation
+        # ------ end of fig 3 implementation
 
         out += x3  # This is visible in formula (5) where: out=f(Y_hat1, Y_hat2,..., Y_hatN), x3 = Y_hatN
         return out
