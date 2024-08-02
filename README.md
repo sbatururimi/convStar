@@ -14,6 +14,6 @@ A simpler approach with pytorch lightning and some StarCell adjustments. We don'
 ---
 - Download the ZueriCrop Dataset from
     1) Download the dataset via https://polybox.ethz.ch/index.php/s/uXfdr2AcXE3QNB6
-    2) Create a storage folder here and rename the downloaded file to `data.h5`
-    3) adjust config.py per your structure. The storage
+    2) Create a `storage` folder here and rename the downloaded file to `data.h5`
+    3) adjust `config.py` per your structure.
 - Run the `train.py`
