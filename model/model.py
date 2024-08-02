@@ -21,6 +21,8 @@ class HierarchicalConvRNN(L.LightningModule):
         grad_clip: float = 5
     ):
         super().__init__()
+        self.save_hyperparameters()
+
         self.ms_conv_star_net = ms_convstar_net
         self.label_refinement_net = label_refinement_net
 
@@ -41,7 +43,6 @@ class HierarchicalConvRNN(L.LightningModule):
         self.mean_loss_refinement = 0.
 
         self.grad_clip = grad_clip
-        # self.save_hyperparameters()
 
     def training_step(self, batch, batch_idx):
         input, target_glob, target_local_1, target_local_2 = batch

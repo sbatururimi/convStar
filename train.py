@@ -121,7 +121,7 @@ def train_test_run():
     )
 
     # setup for training and start training
-    logger.debug("CUDA available: ", torch.cuda.is_available())
+    logger.debug(f"CUDA available: {torch.cuda.is_available()}")
 
     trainer = L.Trainer(fast_dev_run=True)
     trainer.fit(model=model, datamodule=crops_datamodule)

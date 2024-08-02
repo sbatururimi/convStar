@@ -286,6 +286,9 @@ class CropsDataModule(L.LightningDataModule):
         self.storage_dir = storage_dir
         self.logger = logger
 
+        self.save_hyperparameters(logger=False)
+        self.allow_zero_length_dataloader_with_multiple_devices = False
+
     def setup(self, stage: str):
         self.logger.debug(f"Setting datasets for stage `{stage}`...")
         gt_filepath = os.path.join(self.storage_dir, "labels.csv")
