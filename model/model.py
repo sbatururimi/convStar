@@ -11,6 +11,7 @@ class HierarchicalConvRNN(L.LightningModule):
         self,
         ms_convstar_net,
         label_refinement_net,
+        learning_rate: float=1e-3,
         loss_weights_level1=None,
         loss_weights_level2=None,
         loss_weights_level3=None,
@@ -18,14 +19,17 @@ class HierarchicalConvRNN(L.LightningModule):
         lambda_2: float = 0.3,
         lambda_3: float = 0.6,
         gamma: float = 0.6,
-        grad_clip: float = 5
+        grad_clip: float = 5,
+        shedular=None
     ):
         super().__init__()
-        self.save_hyperparameters()
 
         self.ms_conv_star_net = ms_convstar_net
         self.label_refinement_net = label_refinement_net
 
+        # FIXME: if setting deterministic=true, then disable it for this loss. See
+        # issue at https://github.com/pytorch/pytorch/issues to help us prioritize adding deterministic support for this operation.
+        # with torch.backends.cudnn.flags(deterministic=False):
         self.loss_level_1 = torch.nn.CrossEntropyLoss(weight=loss_weights_level1)
         self.loss_level_2 = torch.nn.CrossEntropyLoss(weight=loss_weights_level2)
         self.loss_level_3 = torch.nn.CrossEntropyLoss(weight=loss_weights_level3)
@@ -43,6 +47,14 @@ class HierarchicalConvRNN(L.LightningModule):
         self.mean_loss_label_refinement = 0.
 
         self.grad_clip = grad_clip
+        self.learning_rate = learning_rate
+        self.shedular = shedular
+
+        self.save_hyperparameters()
+
+    @property
+    def name(self):
+        return "hierarchichal_conv_rnn"
 
     def _shared_step(self, batch):
         input, target_glob, target_local_1, target_local_2 = batch
@@ -121,5 +133,16 @@ class HierarchicalConvRNN(L.LightningModule):
         )
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=1e-3, weight_decay=1e-4)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate, weight_decay=1e-4)
+        if self.shedular is not None:
+            sheduler = self.shedular(optimizer)
+            return {
+                "optimizer": optimizer,
+                "lr_scheduler": {
+                    "scheduler": sheduler,
+                    "monitor": "val_loss",
+                    "interval": "epoch",
+                    # "frequency": 1,
+                },
+            }
         return optimizer
