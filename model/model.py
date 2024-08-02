@@ -40,13 +40,12 @@ class HierarchicalConvRNN(L.LightningModule):
         self.mean_loss_level_2 = 0.
         self.mean_loss_level_3 = 0. # most fine grained level
 
-        self.mean_loss_refinement = 0.
+        self.mean_loss_label_refinement = 0.
 
         self.grad_clip = grad_clip
 
-    def training_step(self, batch, batch_idx):
+    def _shared_step(self, batch):
         input, target_glob, target_local_1, target_local_2 = batch
-
         # pass first through the multi-staged ConvStar network ------------------
         output_glob, output_local_1, output_local_2 = self.ms_conv_star_net(input)
 
@@ -63,13 +62,35 @@ class HierarchicalConvRNN(L.LightningModule):
 
         # Label Refinement -------------------------------------------------
         output_glob_R = self.label_refinement_net([output_local_1, output_local_2, output_glob])
-        refinement_loss = self.loss_level_3(output_glob_R, target_glob)
-        self.mean_loss_refinement += refinement_loss.data.cpu().numpy()
+        l_label_refinement = self.loss_level_3(output_glob_R, target_glob)
+        self.mean_loss_label_refinement += l_label_refinement.data.cpu().numpy()
 
         # combine losses, formula (6) in the paper
-        total_loss = total_loss + self.gamma * refinement_loss
+        total_loss = total_loss + self.gamma * l_label_refinement
 
-        return total_loss
+        metrics = {
+            "loss": total_loss,
+            "loss_level1": l_level_1,
+            "loss_level2": l_level_2,
+            "loss_level3": l_level_3,
+            "loss_label_refinement": l_label_refinement,
+            "mean_loss_level1": self.mean_loss_level_1,
+            "mean_loss_level2": self.mean_loss_level_2,
+            "mean_loss_level3": self.mean_loss_level_3,
+            "mean_loss_refinement": self.mean_loss_label_refinement
+        }
+        return metrics
+
+    def training_step(self, batch, batch_idx):
+        metrics = self._shared_step(batch)
+
+        self.log("train_loss", metrics['loss'])
+        self.log("train_loss_level1", metrics['loss_level1'])
+        self.log("train_loss_level2", metrics['loss_level2'])
+        self.log("train_loss_level3", metrics['loss_level3'])
+        self.log("train_loss_label_refinement", metrics['loss_label_refinement'])
+
+        return metrics['loss']
 
     def on_after_backward(self):
         # Clip gradients
@@ -77,10 +98,22 @@ class HierarchicalConvRNN(L.LightningModule):
         torch.nn.utils.clip_grad_norm_(self.label_refinement_net.parameters(), self.grad_clip)
 
     def validation_step(self, batch, batch_idx):
-        pass
+        metrics = self._shared_step(batch)
+
+        self.log("val_loss", metrics['loss'])
+        self.log("val_loss_level1", metrics['loss_level1'])
+        self.log("val_loss_level2", metrics['loss_level2'])
+        self.log("val_loss_level3", metrics['loss_level3'])
+        self.log("val_loss_label_refinement", metrics['loss_label_refinement'])
 
     def test_step(self, batch, batch_idx):
-        pass
+        metrics = self._shared_step(batch)
+
+        self.log("test_loss", metrics['loss'])
+        self.log("test_loss_level1", metrics['loss_level1'])
+        self.log("test_loss_level2", metrics['loss_level2'])
+        self.log("test_loss_level3", metrics['loss_level3'])
+        self.log("tes_loss_label_refinement", metrics['loss_label_refinement'])
 
     def parameters(self):
         return list(self.ms_conv_star_net.parameters()) + list(
