@@ -59,7 +59,7 @@ class HierarchicalConvRNN(L.LightningModule):
 
         self.mean_loss_level_1 += l_level_1.data.cpu().numpy()
         self.mean_loss_level_2 += l_level_2.data.cpu().numpy()
-        self.mean_loss_level_3 += l_level_3.data.cpu().numpu()
+        self.mean_loss_level_3 += l_level_3.data.cpu().numpy()
 
         # Label Refinement -------------------------------------------------
         output_glob_R = self.label_refinement_net([output_local_1, output_local_2, output_glob])

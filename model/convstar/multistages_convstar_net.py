@@ -52,14 +52,20 @@ class MultistagesConvStarNet(nn.Module):
         # convStar step---------------------------------
         # hidden_states is a list (number of layer) of hidden states of size [b x c x h x w]
         if hidden_states is None:
-            hidden_states = [torch.zeros((b, self.hidden_dim, h, w))] * self.n_layers
+            # hidden_states = [torch.zeros((b, self.hidden_dim, h, w))] * self.n_layers
+            hidden_states = [torch.zeros((b, self.hidden_dim, h, w)).to(x.device) for _ in range(self.n_layers)]
 
         for t in range(T):
             hidden_states = self.convStarNet.forward(x[:, :, t, :, :], hidden_states)
 
-        if self.n_layers == 3:
-            local_1 = hidden_states[0]
-            local_2 = hidden_states[1]
+        # we have 6 hidden states, each stage has 2 layer
+        local_1 = hidden_states[1]
+        local_2 = hidden_states[3]
+
+        # XXX: From author's implementation, the similar effect is achived using nstage=3
+        # if self.n_layers == 3:
+            # local_1 = hidden_states[0]
+            # local_2 = hidden_states[1]
         # elif self.nstage == 3:
         #     raise NotImplementedError # I don't undersatdn what are nstage
         #     # local_1 = hidden_states[1]
@@ -76,7 +82,7 @@ class MultistagesConvStarNet(nn.Module):
         local_1 = self.conv_l1(local_1)
         local_2 = self.conv_l2(local_2)
 
-        last = hidden_states[-1]
+        last = hidden_states[-1] # output of last stage
         last = self.conv_l3(last)
 
         if self.test:

@@ -19,7 +19,7 @@ class LabelRefinementNet(nn.Module):
         self.num_classes_l2 = num_classes_l2
         self.num_classes_l3 = num_classes_l3
 
-        input_dim = self.num_classes_l1 + self.num_classes_l2 + self.num_classes_l1
+        input_dim = self.num_classes_l1 + self.num_classes_l2 + self.num_classes_l3
 
         # conv 1
         kernel_size = 1
