@@ -129,9 +129,12 @@ def train_test_run():
     # trainer.validate(datamodule=crops_datamodule)
     # trainer.predict(datamodule=crops_datamodule)
 
+def train():
+    pass
 
 if __name__ == "__main__":
     utils.set_seed(42)
 
     # datamodule_test() #comment train and uncomment this line for datamodule test preparation
     train_test_run()  # quick test/run to check correctness
+    # train()
