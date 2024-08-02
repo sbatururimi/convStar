@@ -40,22 +40,12 @@ def get_logger(name:str, log_filename:str = None) -> logging.Logger:
 
 def set_seed(seed):
     import torch
-    import numpy as np
-    import random
-    # Set seed for Python random module
-    random.seed(seed)
+    from lightning.pytorch import seed_everything
 
-    # Set seed for NumPy
-    np.random.seed(seed)
-
-    # Set seed for PyTorch CPU
-    torch.manual_seed(seed)
+    seed_everything(seed, workers=True)
 
     # Set seed for PyTorch GPU (if CUDA is available)
     if torch.cuda.is_available():
-        torch.cuda.manual_seed(seed)
-        torch.cuda.manual_seed_all(seed)  # If you are using multiple GPUs
-
         # Ensure deterministic behavior for GPU operations
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
