@@ -5,6 +5,7 @@
 # gitignore template for Jupyter Notebooks
 # website: http://jupyter.org/
 logs
+storage/checkpoints
 
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
