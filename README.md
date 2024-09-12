@@ -1,4 +1,6 @@
 # Description
+<img src="https://github.com/sbatururimi/convStar/blob/master/Model%20Drawing.png">
+
 This repository is a PyTorch + PyTorch Lightning implementation of [Crop mapping from image time series: deep learning with multi-scale label hierarchies](https://arxiv.org/pdf/2102.08820). The initial repository unfortunately contains inaccuracies that have been copied many times.
 
 Thank you [Mehmet Ozgur Turkoglu](https://github.com/0zgur0), one of the authors of the paper, for guidance and support.
